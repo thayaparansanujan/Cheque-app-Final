@@ -10,68 +10,11 @@ body{font-family:Arial,sans-serif;background:#f3f6fa;margin:0;padding:20px}
 h1{text-align:center;color:#1769e0}
 .search{display:flex;gap:8px}
 input{flex:1;padding:14px;border:1px solid #ccc;border-radius:10px;font-size:17px}
-button{padding:14px 18px;border:0;border-radius:10px;background:#1769e0;color:#fff;font-weight:bold}
+button{padding:14px 18px;border:0;border-radius:10px;background:#1769e0;color:#fff;font-weight:bold;cursor:pointer}
 .result{margin-top:20px}.row{display:flex;justify-content:space-between;padding:13px 4px;border-bottom:1px solid #eee}
 .label{font-weight:bold;color:#555}.value{text-align:right}
 .msg{text-align:center;color:#777;margin-top:18px}
 
-.dashboard{max-width:900px;margin:25px auto}
-.dash-title{font-size:25px;font-weight:bold;color:#1769e0;margin-bottom:15px}
-.panel{background:#fff;margin-top:15px;padding:18px;border-radius:14px;box-shadow:0 4px 18px #0001}
-.panel h2{margin:0 0 12px;font-size:18px}
-.date-filter{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
-.date-filter div{display:flex;flex-direction:column;gap:6px}
-.date-filter label{font-weight:bold;color:#555;font-size:14px}
-.date-filter input{padding:12px;border:1px solid #ccc;border-radius:9px;font-size:15px}.date-filter input[type=text],.date-filter input[type=number]{min-width:160px}
-.date-filter button{padding:12px 20px}
-.summary{margin-bottom:12px;color:#555}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:620px}
-th,td{padding:11px 8px;border-bottom:1px solid #eee;text-align:left}
-th{background:#f3f6fa;color:#555}
-td:last-child,th:last-child{text-align:right}
-tfoot td{font-weight:bold;border-top:2px solid #ddd}
-@media(max-width:650px){.date-filter{flex-direction:column;align-items:stretch}.date-filter button{width:100%}}
-
-.date-filter{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
-.date-filter div{display:flex;flex-direction:column;gap:6px}
-.date-filter label{font-weight:bold;color:#555;font-size:14px}
-.date-filter input{padding:12px;border:1px solid #ccc;border-radius:9px;font-size:15px}.date-filter input[type=text],.date-filter input[type=number]{min-width:160px}
-.date-filter button,.pass-btn{padding:12px 20px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:620px}
-th,td{padding:11px 8px;border-bottom:1px solid #eee;text-align:left}
-th{background:#f3f6fa;color:#555}
-td:last-child,th:last-child{text-align:right}
-tfoot td{font-weight:bold;border-top:2px solid #ddd}
-.check-col{text-align:center!important;width:45px}
-.pending-badge{display:inline-block;padding:5px 9px;border-radius:8px;background:#fff3cd;color:#856404;font-size:12px}
-@media(max-width:650px){.date-filter{flex-direction:column;align-items:stretch}.date-filter button{width:100%}}
-#manualChequeTable input,#manualChequeTable select,.date-filter select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:15px;background:#fff}
-#manualChequeTable th{white-space:nowrap}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-</head>
-<!--
-Run once in Supabase SQL Editor:
-ALTER TABLE cheques ADD COLUMN IF NOT EXISTS pass boolean NOT NULL DEFAULT false;
-CREATE INDEX IF NOT EXISTS cheques_pass_date_idx ON cheques(pass, date);
---><body>
-<div class="card">
-<h1>Cheque Search</h1>
-<div class="search">
-<input id="cheque" placeholder="Enter Cheque Number" autocomplete="off">
-<button onclick="searchCheque()">SEARCH</button>
-</div>
-<div id="msg" class="msg"></div>
-<div id="result" class="result"></div>
-</div>
-
-
-
-
-
-<style>
 .dashboard{max-width:1000px;margin:25px auto}
 .dash-title{font-size:25px;font-weight:bold;color:#1769e0;margin-bottom:15px}
 .dash-btn{display:block;width:100%;margin:10px 0;padding:15px 18px;border:0;border-radius:12px;background:#1769e0;color:#fff;font-weight:bold;font-size:16px;text-align:left;cursor:pointer}
@@ -81,32 +24,7 @@ CREATE INDEX IF NOT EXISTS cheques_pass_date_idx ON cheques(pass, date);
 .date-filter{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
 .date-filter div{display:flex;flex-direction:column;gap:6px}
 .date-filter label{font-weight:bold;color:#555;font-size:14px}
-.date-filter input{padding:12px;border:1px solid #ccc;border-radius:9px;font-size:15px}.date-filter input[type=text],.date-filter input[type=number]{min-width:160px}
-.action{padding:12px 20px;border:0;border-radius:10px;background:#1769e0;color:#fff;font-weight:bold}.select-all{margin-bottom:10px}
-.table-wrap{overflow-x:auto;margin-top:15px}
-table{width:100%;border-collapse:collapse;min-width:620px}
-th,td{padding:11px 8px;border-bottom:1px solid #eee;text-align:left}
-th{background:#f3f6fa;color:#555}
-td:last-child,th:last-child{text-align:right}
-tfoot td{font-weight:bold;border-top:2px solid #ddd}
-.check-col{text-align:center!important;width:55px}
-.summary{color:#666;margin-top:10px}
-.bank-title{margin-top:22px}
-@media(max-width:600px){.date-filter{flex-direction:column;align-items:stretch}.action{width:100%}}
-</style>
-
-
-<style>
-.dashboard{max-width:1000px;margin:25px auto}
-.dash-title{font-size:25px;font-weight:bold;color:#1769e0;margin-bottom:15px}
-.dash-btn{display:block;width:100%;margin:10px 0;padding:15px 18px;border:0;border-radius:12px;background:#1769e0;color:#fff;font-weight:bold;font-size:16px;text-align:left;cursor:pointer}
-.dash-btn.active{border-radius:12px 12px 0 0}
-.dash-section{display:none;background:#fff;padding:18px;border-radius:0 0 14px 14px;box-shadow:0 4px 18px #0001;margin-bottom:14px}
-.dash-section.active{display:block}
-.date-filter{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
-.date-filter div{display:flex;flex-direction:column;gap:6px}
-.date-filter label{font-weight:bold;color:#555;font-size:14px}
-.date-filter input{padding:12px;border:1px solid #ccc;border-radius:9px;font-size:15px}
+.date-filter input,.date-filter select{padding:12px;border:1px solid #ccc;border-radius:9px;font-size:15px}
 .action{padding:12px 20px;border:0;border-radius:10px;background:#1769e0;color:#fff;font-weight:bold;cursor:pointer}
 .select-all{margin:12px 0}
 .table-wrap{overflow-x:auto;margin-top:15px}
@@ -119,18 +37,36 @@ tfoot td{font-weight:bold;border-top:2px solid #ddd}
 .summary{color:#666;margin-top:10px}
 .bank-title{margin-top:22px}
 @media(max-width:600px){.date-filter{flex-direction:column;align-items:stretch}.action{width:100%}}
+#manualChequeTable input,#manualChequeTable select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:15px;background:#fff}
 </style>
+<!-- SheetJS for Excel Import -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Supabase JS Client SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="card">
+<h1>Cheque Search</h1>
+<div class="search">
+<input id="cheque" placeholder="Enter Cheque Number" autocomplete="off">
+<button onclick="searchCheque()">SEARCH</button>
+</div>
+<div id="msg" class="msg"></div>
+<div id="result" class="result"></div>
+</div>
 
 <div class="dashboard">
   <div class="dash-title">Cheque Dashboard</div>
+  <div class="summary" style="margin-bottom:10px">Database: Supabase (Direct Mode)</div>
 
   <button class="dash-btn active" onclick="toggleDash('dateSection',this)">📅 DATE RANGE</button>
   <div id="dateSection" class="dash-section active">
     <div class="date-filter">
       <div><label>From Date</label><input type="date" id="fromDate"></div>
       <div><label>To Date</label><input type="date" id="toDate"></div>
-      <div><label>Bank</label><select id="dateBankFilter"><option value="">All Banks</option><option>Bank of Ceylon</option><option>People's Bank</option><option>Commercial Bank</option><option>Hatton National Bank</option><option>Sampath Bank</option><option>DFCC Bank</option><option>Nations Trust Bank</option><option>Pan Asia Bank</option><option>National Development Bank</option><option>Seylan Bank</option></select></div>
+      <div><label>Bank</label><select id="dateBankFilter"><option value="">All Banks</option></select></div>
       <button class="action" onclick="loadDateDashboard()">VIEW</button>
+      <button class="action" onclick="printDateDashboard()">PRINT</button>
     </div>
     <div id="dateSummary" class="summary">Select date range.</div>
 
@@ -173,19 +109,19 @@ tfoot td{font-weight:bold;border-top:2px solid #ddd}
     <div class="table-wrap">
       <table id="manualChequeTable" style="min-width:760px">
         <thead>
-          <tr><th>Cheque No</th><th>Date</th><th>Party</th><th>Bank</th><th>Amount</th></tr>
+          <tr><th>Cheque No</th><th>Date</th><th>Party</th><th>Bank</th><th>Amount</th><th>Delete</th></tr>
         </thead>
         <tbody id="manualChequeRows"></tbody>
       </table>
     </div>
-    <button class="action" style="margin-top:15px" onclick="addManualCheque()">ADD ALL TO DATABASE</button>
+    <button class="action" style="margin-top:15px" onclick="addManualCheque()">ADD ALL TO SUPABASE</button>
     <div id="manualSummary" class="summary"></div>
   </div>
 
   <button class="dash-btn" onclick="toggleDash('updateSection',this)">🗄️ DATABASE UPDATE / EXCEL IMPORT</button>
   <div id="updateSection" class="dash-section">
     <h3>Database Update / Excel Import</h3>
-    <p class="summary">Excel import with auto column detection. Existing Cheque No + Date records are skipped.</p>
+    <p class="summary">Excel import with auto column detection. Existing records are checked.</p>
     <div class="date-filter">
       <div><label>Excel File</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv" onchange="importExcel(event)"></div>
     </div>
@@ -200,164 +136,296 @@ tfoot td{font-weight:bold;border-top:2px solid #ddd}
     <button class="action" onclick="updateImportedData()">UPDATE NEW DATA</button>
   </div>
 </div>
+
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycby6zeJ-urP6miUcBNplN96erKxslkdjimQ9a_yGMhOGU4NnaM1tFVeVMbYF8CLsuL0R5g/exec";
+// ==================== SUPABASE CONFIGURATION ====================
+const SUPABASE_URL = 'https://klbdnhsioupnzizaywst.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_r13Fpkv099Hw4dqdmPIlaQ_QUBBOegD';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function row(a,b){return '<div class="row"><span class="label">'+a+'</span><span class="value">'+esc(String(b))+'</span></div>'}
 function toggleDash(id,btn){document.querySelectorAll('.dash-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.dash-btn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}
-async function apiGet(action,params={}){const q=new URLSearchParams({action,...params});const r=await fetch(API_URL+'?'+q.toString(),{cache:'no-store'});if(!r.ok)throw new Error(await r.text());const d=await r.json();if(d.success===false)throw new Error(d.message||'API error');return d}
-async function apiPost(action,data){const body=new URLSearchParams({action,data:JSON.stringify(data)});const r=await fetch(API_URL,{method:'POST',body});if(!r.ok)throw new Error(await r.text());const d=await r.json();if(d.success===false)throw new Error(d.message||'API error');return d}
 
-async function searchCheque(){const no=document.getElementById('cheque').value.trim(),msg=document.getElementById('msg'),result=document.getElementById('result');result.innerHTML='';if(!no){msg.textContent='Enter cheque number';return}msg.textContent='Searching...';try{const d=await apiGet('search',{cheque_no:no});if(!d.data.length){msg.textContent='Cheque not found';return}const x=d.data[0];msg.textContent='';result.innerHTML=row('Cheque No',x.cheque_no)+row('Date',x.date||'-')+row('Party',x.party||'-')+row('Bank',x.bank||'-')+row('Amount',x.amount==null?'-':'Rs. '+Number(x.amount).toLocaleString())+row('Pass',x.pass?'Passed':'Pending')}catch(e){msg.textContent='Google Sheet connection error';console.error(e)}}
-
-async function loadDateDashboard(){
-const from=document.getElementById('fromDate').value,to=document.getElementById('toDate').value,selectedBank=document.getElementById('dateBankFilter').value;
-const rows=document.getElementById('chequeRows'),banks=document.getElementById('bankRows'),totalEl=document.getElementById('chequeTotal'),bankTotal=document.getElementById('bankTotal'),summary=document.getElementById('dateSummary');
-if(!from||!to){summary.textContent='Please select From Date and To Date.';return}
-if(from>to){summary.textContent='From Date cannot be after To Date.';return}
-summary.textContent='Loading...';
-try{
-const d=await apiGet('dateRange',{from,to});let data=d.data||[];
-const filter=document.getElementById('dateBankFilter');
-[...new Set(data.map(x=>String(x.bank||'').trim()).filter(Boolean))].sort().forEach(b=>{if(![...filter.options].some(o=>o.value===b)){const o=document.createElement('option');o.value=b;o.textContent=b;filter.appendChild(o)}});
-if(selectedBank)data=data.filter(x=>String(x.bank||'').trim()===selectedBank);
-const total=data.reduce((s,x)=>s+(Number(x.amount)||0),0);
-document.getElementById('selectAllBtn').textContent='SELECT ALL';
-summary.textContent=data.length+' cheque(s) found'+(selectedBank?' - '+selectedBank:'');
-rows.innerHTML=data.map(x=>{const k=String(x.cheque_no||'')+'|'+String(x.date||'');return '<tr><td class="check-col"><input type="checkbox" class="pass-check" data-key="'+esc(k)+'"'+(x.pass?' checked disabled':'')+'></td><td>'+esc(x.date||'-')+'</td><td>'+esc(x.cheque_no||'-')+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+(Number(x.amount)||0).toLocaleString()+'</td></tr>'}).join('');
-totalEl.innerHTML='<tr><td colspan="5">Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
-const m={};data.forEach(x=>{const b=x.bank||'Unknown';m[b]=(m[b]||0)+(Number(x.amount)||0)});
-banks.innerHTML=Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([b,a])=>'<tr><td>'+esc(b)+'</td><td>Rs. '+a.toLocaleString()+'</td></tr>').join('');
-bankTotal.innerHTML='<tr><td>Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
-if(!data.length){rows.innerHTML='<tr><td colspan="6" class="summary">No cheques found.</td></tr>';banks.innerHTML='<tr><td colspan="2" class="summary">No bank totals.</td></tr>'}
-}catch(e){summary.textContent='Google Sheet connection error';console.error(e)}}
-
-async function markSelectedPassed(){const checks=[...document.querySelectorAll('.pass-check:checked:not(:disabled)')];if(!checks.length){alert('Please select cheque(s).');return}const list=checks.map(c=>{const p=c.dataset.key.split('|');return{cheque_no:p[0],date:p.slice(1).join('|')}});try{const d=await apiPost('passMultiple',list);alert(d.updated+' cheque(s) passed.');await loadDateDashboard();await loadPendingCheques()}catch(e){alert('Pass save failed: '+e.message);console.error(e)}}
-
-async function loadPendingCheques(){
-const rows=document.getElementById('pendingRows'),totalEl=document.getElementById('pendingTotal'),summary=document.getElementById('pendingSummary');
-try{
-  const d=await apiGet('pending');
-  const now=new Date();
-  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const yesterday=new Date(today);
-  yesterday.setDate(yesterday.getDate()-1);
-  const toYmd=x=>String(x||'').slice(0,10);
-  const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  const minDate=ymd(yesterday), maxDate=ymd(today);
-  const data=(d.data||[]).filter(x=>{
-    const dt=toYmd(x.date);
-    return dt>=minDate && dt<=maxDate;
-  });
-  const total=data.reduce((s,x)=>s+(Number(x.amount)||0),0);
-  summary.textContent=data.length+' pass not given cheque(s) - Yesterday & Today';
-  rows.innerHTML=data.map(x=>'<tr><td>'+esc(x.date||'-')+'</td><td>'+esc(x.cheque_no||'-')+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+(Number(x.amount)||0).toLocaleString()+'</td></tr>').join('');
-  totalEl.innerHTML='<tr><td colspan="4">Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
-  if(!data.length)rows.innerHTML='<tr><td colspan="5" class="summary">No pending cheques for yesterday or today.</td></tr>';
-}catch(e){summary.textContent='Google Sheet connection error';console.error(e)}
+// ==================== SEARCH CHEQUE ====================
+async function searchCheque(){
+  const no = document.getElementById('cheque').value.trim(), msg = document.getElementById('msg'), result = document.getElementById('result');
+  result.innerHTML = '';
+  if(!no){msg.textContent='Enter cheque number';return}
+  msg.textContent='Searching...';
+  try{
+    const { data, error } = await _supabase.from('cheques').select('*').eq('cheque_no', no);
+    if(error) throw error;
+    if(!data.length){msg.textContent='Cheque not found';return}
+    const x = data[0];
+    msg.textContent='';
+    result.innerHTML = row('Cheque No', x.cheque_no)+row('Date', x.date||'-')+row('Party', x.party||'-')+row('Bank', x.bank||'-')+row('Amount', x.amount==null?'-':'Rs. '+Number(x.amount).toLocaleString())+row('Pass', x.pass?'Passed':'Pending');
+  }catch(e){msg.textContent='Supabase connection error';console.error(e)}
 }
 
-document.getElementById('cheque').addEventListener('keydown',e=>{if(e.key==='Enter')searchCheque()});loadPendingCheques();
+// ==================== DATE RANGE DASHBOARD ====================
+async function loadDateDashboard(){
+  const from = document.getElementById('fromDate').value, to = document.getElementById('toDate').value, selectedBank = document.getElementById('dateBankFilter').value;
+  const rows = document.getElementById('chequeRows'), banks = document.getElementById('bankRows'), totalEl = document.getElementById('chequeTotal'), bankTotal = document.getElementById('bankTotal'), summary = document.getElementById('dateSummary');
+  if(!from||!to){summary.textContent='Please select From Date and To Date.';return}
+  if(from>to){summary.textContent='From Date cannot be after To Date.';return}
+  summary.textContent='Loading...';
+  try{
+    const { data, error } = await _supabase.from('cheques').select('*').gte('date', from).lte('date', to).order('date', {ascending: true});
+    if(error) throw error;
+    let list = data || [];
+    
+    const filter = document.getElementById('dateBankFilter');
+    const uniqueBanks = [...new Set(list.map(x=>String(x.bank||'').trim()).filter(Boolean))].sort();
+    filter.innerHTML = '<option value="">All Banks</option>' + uniqueBanks.map(b=>'<option value="'+esc(b)+'"'+(b===selectedBank?' selected':'')+'>'+esc(b)+'</option>').join('');
+    
+    if(selectedBank) list = list.filter(x=>String(x.bank||'').trim()===selectedBank);
+    const total = list.reduce((s,x)=>s+(Number(x.amount)||0),0);
+    document.getElementById('selectAllBtn').textContent='SELECT ALL';
+    summary.textContent = list.length+' cheque(s) found'+(selectedBank?' - '+selectedBank:'');
+    
+    rows.innerHTML = list.map(x=>{
+      const k = String(x.cheque_no||'')+'|'+String(x.date||'');
+      return '<tr><td class="check-col"><input type="checkbox" class="pass-check" data-key="'+esc(k)+'"'+(x.pass?' checked disabled':'kval')+'></td><td>'+esc(x.date||'-')+'</td><td>'+esc(x.cheque_no||'-')+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+(Number(x.amount)||0).toLocaleString()+'</td></tr>';
+    }).join('');
+    
+    totalEl.innerHTML = '<tr><td colspan="5">Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
+    
+    const m={}; list.forEach(x=>{const b=x.bank||'Unknown'; m[b]=(m[b]||0)+(Number(x.amount)||0)});
+    banks.innerHTML = Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([b,a])=>'<tr><td>'+esc(b)+'</td><td>Rs. '+a.toLocaleString()+'</td></tr>').join('');
+    bankTotal.innerHTML = '<tr><td>Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
+    
+    if(!list.length){rows.innerHTML='<tr><td colspan="6" class="summary">No cheques found.</td></tr>';banks.innerHTML='<tr><td colspan="2" class="summary">No bank totals.</td></tr>'}
+  }catch(e){summary.textContent='Supabase connection error';console.error(e)}
+}
 
-let importedCheques=[],importReady=false;
-function normalizeHeader(s){return String(s||'').trim().toLowerCase().replace(/[().:/\-]+/g,' ').replace(/\s+/g,'')}
-function findField(obj,names){const keys=Object.keys(obj),wanted=names.map(normalizeHeader);return keys.find(k=>wanted.includes(normalizeHeader(k)))||null}
-function parseImportedRow(obj){const dateKey=findField(obj,['date','chequedate','dateofcheque','transactiondate','chequedated']),noKey=findField(obj,['chequeno','chequenumber','cheque','chqno','chqnumber','number']),partyKey=findField(obj,['party','payee','customer','customername','name','vendor']),bankKey=findField(obj,['bank','bankname','bankaccount']),amountKey=findField(obj,['amount','value','chequeamount','total','netamount']),passKey=findField(obj,['pass','passed','passstatus','status']);return{cheque_no:noKey?String(obj[noKey]??'').trim():'',date:dateKey?formatExcelDate(obj[dateKey]):'',party:partyKey?String(obj[partyKey]??'').trim():'',bank:bankKey?String(obj[bankKey]??'').trim():'',amount:amountKey?cleanAmount(obj[amountKey]):0,pass:passKey?isPassedValue(obj[passKey]):false,_status:'Checking...'}}
-function cleanAmount(v){if(typeof v==='number')return isFinite(v)?v:0;return Number(String(v??'').replace(/[^\d.-]/g,''))||0}
-function isPassedValue(v){return ['true','yes','y','passed','pass','1','done'].includes(String(v??'').trim().toLowerCase())}
-function formatExcelDate(v){if(v instanceof Date&&!isNaN(v))return v.toISOString().slice(0,10);if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);if(d)return String(d.y).padStart(4,'0')+'-'+String(d.m).padStart(2,'0')+'-'+String(d.d).padStart(2,'0')}const s=String(v??'').trim();if(!s)return '';let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');const dt=new Date(s);return isNaN(dt)?s:dt.toISOString().slice(0,10)}
+// ==================== MARK PASSED ====================
+async function markSelectedPassed(){
+  const checks=[...document.querySelectorAll('.pass-check:checked:not(:disabled)')];
+  if(!checks.length){alert('Please select cheque(s).');return}
+  try{
+    for(const c of checks){
+      const p=c.dataset.key.split('|');
+      const cheque_no=p[0], date=p.slice(1).join('|');
+      await _supabase.from('cheques').update({pass:true}).eq('cheque_no', cheque_no).eq('date', date);
+    }
+    alert('Selected cheque(s) passed successfully.');
+    await loadDateDashboard();
+    await loadPendingCheques();
+  }catch(e){alert('Pass save failed: '+e.message);console.error(e)}
+}
 
-async function importExcel(event){const file=event.target.files[0];if(!file)return;const summary=document.getElementById('importSummary'),mapping=document.getElementById('mappingSummary'),rows=document.getElementById('importRows');summary.textContent='Reading Excel...';mapping.textContent='';importReady=false;const reader=new FileReader();reader.onload=async function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]],raw=XLSX.utils.sheet_to_json(ws,{defval:''});importedCheques=raw.map(parseImportedRow).filter(x=>x.cheque_no&&x.date);if(!importedCheques.length){summary.textContent='No valid rows found. Cheque No and Date are required.';rows.innerHTML='<tr><td colspan="7" class="summary">No valid cheque rows.</td></tr>';return}mapping.textContent='Detected Excel columns: '+Object.keys(raw[0]||{}).join(', ');summary.textContent=importedCheques.length+' valid cheque(s). Checking Google Sheet...';await checkExistingImportRows();renderImportRows();importReady=importedCheques.some(x=>x._status==='NEW');summary.textContent='Ready: '+importedCheques.filter(x=>x._status==='NEW').length+' new | '+importedCheques.filter(x=>x._status==='SKIP').length+' existing skipped'}catch(err){summary.textContent='Excel read/check error';console.error(err)}};reader.readAsArrayBuffer(file)}
-async function checkExistingImportRows(){const dates=importedCheques.map(x=>x.date).sort(),d=await apiGet('dateRange',{from:dates[0],to:dates[dates.length-1]}),set=new Set(d.data.map(x=>String(x.cheque_no||'').trim()+'|'+String(x.date||'').slice(0,10)));importedCheques.forEach(x=>x._status=set.has(x.cheque_no+'|'+x.date)?'SKIP':'NEW')}
-function renderImportRows(){document.getElementById('importRows').innerHTML=importedCheques.map(x=>'<tr><td>'+x._status+'</td><td>'+esc(x.date)+'</td><td>'+esc(x.cheque_no)+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+Number(x.amount||0).toLocaleString()+'</td><td>'+ (x.pass?'Passed':'Pending')+'</td></tr>').join('')}
-async function updateImportedData(){const newRows=importedCheques.filter(x=>x._status==='NEW');if(!newRows.length){alert('No new cheque data to update. Existing records were skipped.');return}const summary=document.getElementById('importSummary');summary.textContent='Updating '+newRows.length+' new cheque(s)...';try{const d=await apiPost('import',newRows.map(x=>({cheque_no:x.cheque_no,date:x.date,party:x.party,bank:x.bank,amount:x.amount,pass:x.pass})));newRows.forEach(x=>x._status='UPDATED');renderImportRows();summary.textContent=d.added+' new cheque(s) added. '+d.skipped+' existing/invalid row(s) skipped.';await loadPendingCheques()}catch(e){summary.textContent='Google Sheet update error';alert('Import failed: '+e.message);console.error(e)}}
+// ==================== PENDING CHEQUES ====================
+async function loadPendingCheques(){
+  const rows=document.getElementById('pendingRows'), totalEl=document.getElementById('pendingTotal'), summary=document.getElementById('pendingSummary');
+  try{
+    const now=new Date();
+    const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const yesterday=new Date(today); yesterday.setDate(yesterday.getDate()-1);
+    const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    
+    const { data, error } = await _supabase.from('cheques').select('*').eq('pass', false).gte('date', ymd(yesterday)).lte('date', ymd(today));
+    if(error) throw error;
+    const list = data || [];
+    const total = list.reduce((s,x)=>s+(Number(x.amount)||0),0);
+    
+    summary.textContent = list.length+' pending cheque(s) - Yesterday & Today';
+    rows.innerHTML = list.map(x=>'<tr><td>'+esc(x.date||'-')+'</td><td>'+esc(x.cheque_no||'-')+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+(Number(x.amount)||0).toLocaleString()+'</td></tr>').join('');
+    totalEl.innerHTML = '<tr><td colspan="4">Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
+    if(!list.length) rows.innerHTML='<tr><td colspan="5" class="summary">No pending cheques for yesterday or today.</td></tr>';
+  }catch(e){summary.textContent='Supabase connection error';console.error(e)}
+}
 
-let manualRows=[];
+document.getElementById('cheque').addEventListener('keydown',e=>{if(e.key==='Enter')searchCheque()});
+
+// ==================== MANUAL ADD CHEQUES ====================
 let BANK_LIST=[];
-
 function bankOptions(selected=''){
-const list=[...new Set([selected,...BANK_LIST].filter(Boolean))];
-return '<option value="">Select Bank</option>'+list.map(b=>'<option value="'+esc(b)+'"'+(b===selected?' selected':'')+'>'+esc(b)+'</option>').join('');
+  const list=[...new Set([selected,...BANK_LIST].filter(Boolean))];
+  return '<option value="">Select Bank</option>'+list.map(b=>'<option value="'+esc(b)+'"'+(b===selected?' selected':'')+'>'+esc(b)+'</option>').join('');
 }
 
 async function loadBankList(){
   try{
-    const d=await apiGet('dateRange',{from:'2000-01-01',to:'2099-12-31'});
-    BANK_LIST=[...new Set((d.data||[]).map(x=>String(x.bank||'').trim()).filter(Boolean))].sort();
+    const { data } = await _supabase.from('cheques').select('bank');
+    BANK_LIST=[...new Set((data||[]).map(x=>String(x.bank||'').trim()).filter(Boolean))].sort();
     const filter=document.getElementById('dateBankFilter');
     const current=filter.value;
     filter.innerHTML='<option value="">All Banks</option>'+BANK_LIST.map(b=>'<option value="'+esc(b)+'">'+esc(b)+'</option>').join('');
     if(BANK_LIST.includes(current)) filter.value=current;
     document.querySelectorAll('.m-bank').forEach(sel=>{
-      const val=sel.value;
-      sel.innerHTML=bankOptions(val);
+      const val=sel.value; sel.innerHTML=bankOptions(val);
       if(val && BANK_LIST.includes(val)) sel.value=val;
     });
   }catch(e){console.error('Bank list load failed',e)}
 }
 
 function addManualRow(chequeNo='',date='',party='',bank='',amount='',focusField=''){
-const tbody=document.getElementById('manualChequeRows'),tr=document.createElement('tr');
-tr.innerHTML='<td><input class="m-cheque" type="text" value="'+esc(chequeNo)+'" placeholder="Cheque No"></td>'+
-'<td><input class="m-date" type="date" value="'+esc(date)+'"></td>'+
-'<td><input class="m-party" type="text" value="'+esc(party)+'" placeholder="Party"></td>'+
-'<td><select class="m-bank">'+bankOptions(bank)+'</select></td>'+
-'<td><input class="m-amount" type="number" step="0.01" value="'+esc(amount)+'" placeholder="Amount"></td>';
-tbody.appendChild(tr);
+  const tbody=document.getElementById('manualChequeRows'),tr=document.createElement('tr');
+  tr.innerHTML='<td><input class="m-cheque" type="text" value="'+esc(chequeNo)+'" placeholder="Cheque No"></td>'+
+  '<td><input class="m-date" type="date" value="'+esc(date)+'"></td>'+
+  '<td><input class="m-party" type="text" value="'+esc(party)+'" placeholder="Party"></td>'+
+  '<td><select class="m-bank">'+bankOptions(bank)+'</select></td>'+
+  '<td><input class="m-amount" type="number" step="0.01" value="'+esc(amount)+'" placeholder="Amount"></td>'+
+  '<td><button type="button" class="action delete-manual" style="padding:8px 12px;background:#c62828" title="Delete row">DELETE</button></td>';
+  tbody.appendChild(tr);
 
-const fields=[
-  tr.querySelector('.m-cheque'),
-  tr.querySelector('.m-date'),
-  tr.querySelector('.m-party'),
-  tr.querySelector('.m-bank'),
-  tr.querySelector('.m-amount')
-];
+  const fields=[tr.querySelector('.m-cheque'), tr.querySelector('.m-date'), tr.querySelector('.m-party'), tr.querySelector('.m-bank'), tr.querySelector('.m-amount')];
+  fields.forEach((el,i)=>el.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return; e.preventDefault();
+    if(i<4) fields[i+1].focus(); else addNextManualRow(tr);
+  }));
 
-fields.forEach((el,i)=>el.addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return;
-  e.preventDefault();
-  if(i<4){
-    fields[i+1].focus();
-  }else{
-    addNextManualRow(tr);
-  }
-}));
+  tr.querySelector('.delete-manual').addEventListener('click',()=>{
+    tr.remove(); if(!document.querySelector('#manualChequeRows tr')) initManualRows();
+  });
 
-if(focusField){
-  const t=tr.querySelector('.'+focusField);
-  if(t)setTimeout(()=>t.focus(),0);
-}
-return tr;
+  if(focusField){const t=tr.querySelector('.'+focusField); if(t)setTimeout(()=>t.focus(),0);}
+  return tr;
 }
 
 function addNextManualRow(current){
-const chequeText=current.querySelector('.m-cheque').value.trim();
-if(!chequeText){current.querySelector('.m-cheque').focus();return}
-const n=Number(chequeText),next=Number.isFinite(n)?String(n+1):'';
-const bank=current.querySelector('.m-bank').value;
-const date=current.querySelector('.m-date').value || new Date().toISOString().slice(0,10);
-addManualRow(next,date,'',bank,'','m-date');
+  const chequeText=current.querySelector('.m-cheque').value.trim();
+  if(!chequeText){current.querySelector('.m-cheque').focus();return}
+  const n=Number(chequeText),next=Number.isFinite(n)?String(n+1):'';
+  const bank=current.querySelector('.m-bank').value;
+  const date=current.querySelector('.m-date').value || new Date().toISOString().slice(0,10);
+  addManualRow(next,date,'',bank,'','m-date');
 }
 
 function initManualRows(){const tbody=document.getElementById('manualChequeRows');if(!tbody.children.length)addManualRow('',new Date().toISOString().slice(0,10),'','','','m-cheque')}
 
 async function addManualCheque(){
-const rows=[...document.querySelectorAll('#manualChequeRows tr')],summary=document.getElementById('manualSummary');
-const data=rows.map(tr=>({cheque_no:tr.querySelector('.m-cheque').value.trim(),date:tr.querySelector('.m-date').value,party:tr.querySelector('.m-party').value.trim(),bank:tr.querySelector('.m-bank').value.trim(),amount:Number(tr.querySelector('.m-amount').value),pass:false})).filter(x=>x.cheque_no&&x.date);
-if(!data.length){summary.textContent='Cheque No and Date are required.';return}
-if(data.find(x=>!x.bank||!x.amount)){summary.textContent='Bank and Amount are required for all cheque rows.';return}
-summary.textContent='Checking Google Sheet...';
-try{let added=0,skipped=0;for(const x of data){const d=await apiPost('add',x);if(d.skipped)skipped++;else added++}
-summary.textContent=added+' cheque(s) added. '+skipped+' existing/skipped.';
-document.getElementById('manualChequeRows').innerHTML='';initManualRows();
+  const rows=[...document.querySelectorAll('#manualChequeRows tr')], summary=document.getElementById('manualSummary');
+  const data=rows.map(tr=>({
+    cheque_no: tr.querySelector('.m-cheque').value.trim(),
+    date: tr.querySelector('.m-date').value,
+    party: tr.querySelector('.m-party').value.trim(),
+    bank: tr.querySelector('.m-bank').value.trim(),
+    amount: Number(tr.querySelector('.m-amount').value),
+    pass: false
+  })).filter(x=>x.cheque_no&&x.date);
+
+  if(!data.length){summary.textContent='Cheque No and Date are required.';return}
+  if(data.find(x=>!x.bank||!x.amount)){summary.textContent='Bank and Amount are required for all rows.';return}
+  summary.textContent='Saving to Supabase...';
+  
+  try{
+    let added=0, skipped=0;
+    for(const x of data){
+      const { data: existing } = await _supabase.from('cheques').select('id').eq('cheque_no', x.cheque_no).eq('date', x.date);
+      if(existing && existing.length > 0){
+        skipped++;
+      } else {
+        const { error } = await _supabase.from('cheques').insert([x]);
+        if(error) throw error;
+        added++;
+      }
+    }
+    summary.textContent=added+' cheque(s) added. '+skipped+' existing/skipped.';
+    document.getElementById('manualChequeRows').innerHTML=''; initManualRows();
     await loadPendingCheques();
-    if(document.getElementById('fromDate').value&&document.getElementById('toDate').value)await loadDateDashboard();
-  }catch(e){summary.textContent='Google Sheet update error';alert('Cheque add failed: '+e.message);console.error(e)}
+  }catch(e){summary.textContent='Supabase error: '+e.message;console.error(e)}
 }
+
+// ==================== EXCEL IMPORT ====================
+let importedCheques=[];
+function normalizeHeader(s){return String(s||'').trim().toLowerCase().replace(/[().:/\-]+/g,' ').replace(/\s+/g,'')}
+function findField(obj,names){const keys=Object.keys(obj),wanted=names.map(normalizeHeader);return keys.find(k=>wanted.includes(normalizeHeader(k)))||null}
+function parseImportedRow(obj){
+  const dateKey=findField(obj,['date','chequedate','dateofcheque','transactiondate','chequedated']);
+  const noKey=findField(obj,['chequeno','chequenumber','cheque','chqno','chqnumber','number']);
+  const partyKey=findField(obj,['party','payee','customer','customername','name','vendor']);
+  const bankKey=findField(obj,['bank','bankname','bankaccount']);
+  const amountKey=findField(obj,['amount','value','chequeamount','total','netamount']);
+  const passKey=findField(obj,['pass','passed','passstatus','status']);
+  return{
+    cheque_no:noKey?String(obj[noKey]??'').trim():'',
+    date:dateKey?formatExcelDate(obj[dateKey]):'',
+    party:partyKey?String(obj[partyKey]??'').trim():'',
+    bank:bankKey?String(obj[bankKey]??'').trim():'',
+    amount:amountKey?cleanAmount(obj[amountKey]):0,
+    pass:passKey?isPassedValue(obj[passKey]):false,
+    _status:'Checking...'
+  };
+}
+function cleanAmount(v){if(typeof v==='number')return isFinite(v)?v:0;return Number(String(v??'').replace(/[^\d.-]/g,''))||0}
+function isPassedValue(v){return ['true','yes','y','passed','pass','1','done'].includes(String(v??'').trim().toLowerCase())}
+function formatExcelDate(v){
+  if(v instanceof Date&&!isNaN(v))return v.toISOString().slice(0,10);
+  if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);if(d)return String(d.y).padStart(4,'0')+'-'+String(d.m).padStart(2,'0')+'-'+String(d.d).padStart(2,'0')}
+  const s=String(v??'').trim(); if(!s)return '';
+  let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+  if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  const dt=new Date(s); return isNaN(dt)?s:dt.toISOString().slice(0,10);
+}
+
+async function importExcel(event){
+  const file=event.target.files[0]; if(!file)return;
+  const summary=document.getElementById('importSummary'), mapping=document.getElementById('mappingSummary'), rows=document.getElementById('importRows');
+  summary.textContent='Reading Excel...'; mapping.textContent='';
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true}), ws=wb.Sheets[wb.SheetNames[0]], raw=XLSX.utils.sheet_to_json(ws,{defval:''});
+      importedCheques=raw.map(parseImportedRow).filter(x=>x.cheque_no&&x.date);
+      if(!importedCheques.length){summary.textContent='No valid rows found.'; rows.innerHTML='<tr><td colspan="7" class="summary">No valid rows.</td></tr>';return}
+      mapping.textContent='Detected columns: '+Object.keys(raw[0]||{}).join(', ');
+      
+      for(const x of importedCheques){
+        const { data } = await _supabase.from('cheques').select('id').eq('cheque_no', x.cheque_no).eq('date', x.date);
+        x._status = (data && data.length > 0) ? 'SKIP' : 'NEW';
+      }
+      renderImportRows();
+      summary.textContent='Ready: '+importedCheques.filter(x=>x._status==='NEW').length+' new | '+importedCheques.filter(x=>x._status==='SKIP').length+' skipped';
+    }catch(err){summary.textContent='Excel read error';console.error(err)}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderImportRows(){
+  document.getElementById('importRows').innerHTML=importedCheques.map(x=>'<tr><td>'+x._status+'</td><td>'+esc(x.date)+'</td><td>'+esc(x.cheque_no)+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+Number(x.amount||0).toLocaleString()+'</td><td>'+(x.pass?'Passed':'Pending')+'</td></tr>').join('');
+}
+
+async function updateImportedData(){
+  const newRows=importedCheques.filter(x=>x._status==='NEW');
+  if(!newRows.length){alert('No new records to import.');return}
+  const summary=document.getElementById('importSummary');
+  summary.textContent='Importing '+newRows.length+' records...';
+  try{
+    let added=0;
+    for(const x of newRows){
+      const { error } = await _supabase.from('cheques').insert([{cheque_no:x.cheque_no, date:x.date, party:x.party, bank:x.bank, amount:x.amount, pass:x.pass}]);
+      if(!error) added++;
+    }
+    summary.textContent=added+' new cheque(s) added successfully.';
+    await loadPendingCheques();
+  }catch(e){summary.textContent='Import error';alert('Import failed: '+e.message);console.error(e)}
+}
+
+function printDateDashboard(){
+  const from=document.getElementById('fromDate').value, to=document.getElementById('toDate').value;
+  if(!from||!to){alert('Please select dates and click VIEW first.');return}
+  const bank=document.getElementById('dateBankFilter').value, section=document.getElementById('dateSection');
+  const w=window.open('','_blank');
+  if(!w){alert('Please allow pop-ups.');return}
+  w.document.write('<html><head><title>Report</title><style>body{font-family:Arial;padding:20px}h2{color:#1769e0}table{width:100%;border-collapse:collapse;margin:15px 0}th,td{border:1px solid #ccc;padding:8px;text-align:left}th{background:#f3f6fa}td:last-child,th:last-child{text-align:right}</style></head><body>'+
+    '<h2>Cheque Report</h2><p><b>From:</b> '+from+' &nbsp; <b>To:</b> '+to+(bank?' &nbsp; <b>Bank:</b> '+esc(bank):'')+'</p>'+
+    section.querySelector('.table-wrap').outerHTML+'<h3>Bank-wise Total</h3>'+section.querySelectorAll('.table-wrap')[1].outerHTML+'</body></html>');
+  w.document.close(); w.focus(); setTimeout(()=>{w.print();w.close()},300);
+}
+
+function toggleSelectAll(){
+  const boxes=[...document.querySelectorAll('.pass-check:not(:disabled)')];
+  if(!boxes.length){alert('No pending cheques.');return}
+  const allChecked=boxes.every(x=>x.checked);
+  boxes.forEach(x=>x.checked=!allChecked);
+  document.getElementById('selectAllBtn').textContent=allChecked?'SELECT ALL':'UNSELECT ALL';
+}
+
 initManualRows();
 loadBankList();
 loadPendingCheques();
-
-function toggleSelectAll(){const boxes=[...document.querySelectorAll('.pass-check:not(:disabled)')];if(!boxes.length){alert('No pending cheques to select.');return}const allChecked=boxes.every(x=>x.checked);boxes.forEach(x=>x.checked=!allChecked);document.getElementById('selectAllBtn').textContent=allChecked?'SELECT ALL':'UNSELECT ALL'}
 </script>
+</body>
+</html>
