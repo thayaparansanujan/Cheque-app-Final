@@ -91,8 +91,20 @@ select{outline:none}
 </div>
 
 <button class="dash-btn" onclick="toggleDash('pendingSection',this);loadPendingCheques()">⏳ PENDING CHEQUE</button>
-<div id="pendingSection" class="dash-section"><div id="pendingSummary" class="summary">Loading...</div>
-<div class="table-wrap"><table><thead><tr><th>Date</th><th>Cheque No</th><th>Party</th><th>Bank</th><th>Amount</th></tr></thead><tbody id="pendingRows"></tbody><tfoot id="pendingTotal"></tfoot></table></div></div>
+<div id="pendingSection" class="dash-section">
+  <div class="date-filter">
+    <div><label>From Cheque No</label><input id="pendingFromCheque" inputmode="numeric" placeholder="e.g. 1001"></div>
+    <div><label>To Cheque No</label><input id="pendingToCheque" inputmode="numeric" placeholder="e.g. 1050"></div>
+    <div><label>From Date</label><input type="date" id="pendingFromDate"></div>
+    <div><label>To Date</label><input type="date" id="pendingToDate"></div>
+    <div><label>Bank</label><select id="pendingBankFilter"><option value="">All Banks</option></select></div>
+    <button class="action" onclick="loadPendingCheques()">VIEW</button>
+    <button class="action" onclick="clearPendingFilters()">CLEAR</button>
+  </div>
+  <div class="summary">Default view: all pending cheques dated today and earlier.</div>
+  <div id="pendingSummary" class="summary">Loading...</div>
+  <div class="table-wrap"><table><thead><tr><th>Date</th><th>Cheque No</th><th>Party</th><th>Bank</th><th>Amount</th></tr></thead><tbody id="pendingRows"></tbody><tfoot id="pendingTotal"></tfoot></table></div>
+</div>
 
 <button class="dash-btn" onclick="toggleDash('manualSection',this);loadBankList()">➕ ADD CHEQUE DETAILS</button>
 <div id="manualSection" class="dash-section"><h3>Add Cheque Details</h3>
@@ -235,13 +247,116 @@ alert('Selected cheque(s) passed successfully.');await loadDateDashboard();await
 function toggleSelectAll(){const boxes=[...document.querySelectorAll('.pass-check:not(:disabled)')];if(!boxes.length){alert('No pending cheques.');return}const all=boxes.every(x=>x.checked);boxes.forEach(x=>x.checked=!all);document.getElementById('selectAllBtn').textContent=all?'SELECT ALL':'UNSELECT ALL'}
 
 async function loadPendingCheques(){
-const rows=document.getElementById('pendingRows'),totalEl=document.getElementById('pendingTotal'),summary=document.getElementById('pendingSummary');
-try{const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),yesterday=new Date(today);yesterday.setDate(yesterday.getDate()-1);
-const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const {data,error}=await _supabase.from('cheques').select('*').eq('pass',false).gte('date',ymd(yesterday)).lte('date',ymd(today));if(error)throw error;const list=data||[],total=list.reduce((s,x)=>s+(Number(x.amount)||0),0);
-summary.textContent=list.length+' pending cheque(s) - Yesterday & Today';rows.innerHTML=list.map(x=>'<tr><td>'+esc(x.date||'-')+'</td><td>'+esc(x.cheque_no||'-')+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+(Number(x.amount)||0).toLocaleString()+'</td></tr>').join('');totalEl.innerHTML='<tr><td colspan="4">Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
-if(!list.length)rows.innerHTML='<tr><td colspan="5" class="summary">No pending cheques for yesterday or today.</td></tr>'
-}catch(e){summary.textContent='Supabase connection error';console.error(e)}
+  const rows=document.getElementById('pendingRows'),
+        totalEl=document.getElementById('pendingTotal'),
+        summary=document.getElementById('pendingSummary'),
+        bankFilter=document.getElementById('pendingBankFilter');
+
+  const fromCheque=document.getElementById('pendingFromCheque')?.value.trim()||'';
+  const toCheque=document.getElementById('pendingToCheque')?.value.trim()||'';
+  const fromDate=document.getElementById('pendingFromDate')?.value||'';
+  const toDate=document.getElementById('pendingToDate')?.value||'';
+  const selectedBank=bankFilter?.value||'';
+
+  rows.innerHTML='<tr><td colspan="5" class="summary">Loading...</td></tr>';
+  totalEl.innerHTML='';
+
+  if(fromCheque && !/^\d+$/.test(fromCheque)){
+    summary.textContent='From Cheque No must be numeric.';
+    rows.innerHTML='';
+    return;
+  }
+  if(toCheque && !/^\d+$/.test(toCheque)){
+    summary.textContent='To Cheque No must be numeric.';
+    rows.innerHTML='';
+    return;
+  }
+  if(fromCheque && toCheque && Number(fromCheque)>Number(toCheque)){
+    summary.textContent='From Cheque No cannot be greater than To Cheque No.';
+    rows.innerHTML='';
+    return;
+  }
+  if(fromDate && toDate && fromDate>toDate){
+    summary.textContent='From Date cannot be after To Date.';
+    rows.innerHTML='';
+    return;
+  }
+
+  try{
+    const now=new Date();
+    const today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    const effectiveToDate=toDate ? (toDate<today?toDate:today) : today;
+
+    let query=_supabase.from('cheques').select('*')
+      .eq('pass',false)
+      .lte('date',effectiveToDate);
+
+    if(fromDate) query=query.gte('date',fromDate);
+
+    const {data,error}=await query.order('date',{ascending:true}).order('cheque_no',{ascending:true});
+    if(error) throw error;
+
+    let list=data||[];
+
+    // Refresh bank dropdown from the pending records, while retaining the selected bank.
+    const uniqueBanks=[...new Set(list.map(x=>String(x.bank||'').trim()).filter(Boolean))]
+      .sort((a,b)=>a.localeCompare(b));
+    if(bankFilter){
+      bankFilter.innerHTML='<option value="">All Banks</option>'+
+        uniqueBanks.map(b=>'<option value="'+esc(b)+'">'+esc(b)+'</option>').join('');
+      if(selectedBank && uniqueBanks.includes(selectedBank)) bankFilter.value=selectedBank;
+    }
+
+    if(selectedBank) list=list.filter(x=>String(x.bank||'').trim()===selectedBank);
+
+    if(fromCheque){
+      const min=Number(fromCheque);
+      list=list.filter(x=>{
+        const n=Number(String(x.cheque_no??'').trim());
+        return Number.isFinite(n) && n>=min;
+      });
+    }
+    if(toCheque){
+      const max=Number(toCheque);
+      list=list.filter(x=>{
+        const n=Number(String(x.cheque_no??'').trim());
+        return Number.isFinite(n) && n<=max;
+      });
+    }
+
+    const total=list.reduce((s,x)=>s+(Number(x.amount)||0),0);
+
+    const filters=[];
+    if(fromCheque||toCheque) filters.push('Cheque No: '+(fromCheque||'ANY')+' - '+(toCheque||'ANY'));
+    if(fromDate) filters.push('From Date: '+fromDate);
+    if(selectedBank) filters.push('Bank: '+selectedBank);
+    filters.push('Up to Today: '+today);
+
+    summary.textContent=list.length+' pending cheque(s) | '+filters.join(' | ');
+
+    rows.innerHTML=list.map(x=>'<tr><td>'+esc(x.date||'-')+'</td><td>'+esc(x.cheque_no||'-')+'</td><td>'+esc(x.party||'-')+'</td><td>'+esc(x.bank||'-')+'</td><td>Rs. '+(Number(x.amount)||0).toLocaleString()+'</td></tr>').join('');
+
+    totalEl.innerHTML='<tr><td colspan="4">Total</td><td>Rs. '+total.toLocaleString()+'</td></tr>';
+
+    if(!list.length){
+      rows.innerHTML='<tr><td colspan="5" class="summary">No pending cheques found for the selected filter.</td></tr>';
+    }
+  }catch(e){
+    summary.textContent='Supabase connection error: '+(e.message||'Unknown error');
+    rows.innerHTML='';
+    console.error(e);
+  }
+}
+
+
+function clearPendingFilters(){
+  document.getElementById('pendingFromCheque').value='';
+  document.getElementById('pendingToCheque').value='';
+  document.getElementById('pendingFromDate').value='';
+  document.getElementById('pendingToDate').value='';
+  const bank=document.getElementById('pendingBankFilter');
+  if(bank) bank.value='';
+  loadPendingCheques();
 }
 
 let BANK_LIST=[];
@@ -804,7 +919,7 @@ function buildMonthlyDiary(data,year,monthNo){
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4">DAILY TOTAL</td>
+                <td colspan="5">DAILY TOTAL</td>
                 <td>Rs. ${total.toLocaleString()}</td>
               </tr>
             </tfoot>
@@ -905,12 +1020,15 @@ h1{font-size:16px;text-align:center;margin:0 0 10px}
 table{width:100%;border-collapse:collapse;table-layout:fixed;margin:0 0 5px}
 th,td{border:1px solid #777;padding:3px 5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 th{font-weight:bold;background:#eee;text-align:left}
-th:nth-child(1),td:nth-child(1){width:14%}
-th:nth-child(2),td:nth-child(2){width:13%}
-th:nth-child(3),td:nth-child(3){width:28%}
-th:nth-child(4),td:nth-child(4){width:25%}
-th:nth-child(5),td:nth-child(5){width:20%;text-align:right}
+th:nth-child(1),td:nth-child(1){width:6%;text-align:center}
+th:nth-child(2),td:nth-child(2){width:12%}
+th:nth-child(3),td:nth-child(3){width:14%}
+th:nth-child(4),td:nth-child(4){width:24%}
+th:nth-child(5),td:nth-child(5){width:16%}
+th:nth-child(6),td:nth-child(6){width:16%;text-align:right}
+th:nth-child(7),td:nth-child(7){width:12%;text-align:center}
 tfoot td{font-weight:bold;border-top:1.5px solid #222}
+tfoot td:last-child{text-align:right}
 .diary-grand-total{font-size:13px;font-weight:bold;text-align:right;border-top:2px solid #222;padding-top:6px;margin-top:8px;page-break-inside:avoid}
 </style></head><body>
 <h1>CHEQUE DIARY - ${month}</h1>
@@ -921,6 +1039,12 @@ ${content}
 function printDateDashboard(){const section=document.getElementById('dateSection'),w=window.open('','_blank');if(!w){alert('Please allow pop-ups.');return}w.document.write('<html><head><title>Cheque Report</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse;margin:15px 0}th,td{border:1px solid #ccc;padding:8px}th{background:#f3f6fa}</style></head><body><h2>Cheque Report</h2>'+section.querySelector('.table-wrap').outerHTML+'</body></html>');w.document.close();w.focus();setTimeout(()=>{w.print();w.close()},300)}
 
 document.getElementById('cheque').addEventListener('keydown',e=>{if(e.key==='Enter')searchCheque()});
+['pendingFromCheque','pendingToCheque','pendingFromDate','pendingToDate','pendingBankFilter'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('keydown',e=>{
+    if(e.key==='Enter') loadPendingCheques();
+  });
+});
 initManualRows();
 loadBankList();
 setupAllManualKeyboard();
